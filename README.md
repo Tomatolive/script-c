@@ -2,7 +2,7 @@
 Le script permet la génération des fichiers sources, la génération de la documentation doxygen, la compilation (simple ou séparée) et l'execution (avec ou sans arguments) du programme.
 Il est impératif que les fichiers sources (fichiers de programmation), s'ils existent avant le lancement du script, soit placés dans le même répertoire que le script.
 
-Argument (l'ordre des arguments n'a aucune importance, cependant les tirets sont obligatoires) :
+Argument (l'ordre des arguments n'a aucune importance, cependant les tirets sont obligatoires) :\n
 -c : cet argument permet la création des fichiers de programmation. Si aucun autre argument n'est utilisé, le script créera et compilera un simple fichier main.c. En utilisant l'argument -cs, il créera et compilera les trois fichiers en utilisant les noms par défault. Pour utiliser des noms personnalisés, utilisez les arguments -csn ou -cun
 -cs : cet argument permet la compilation séparée, avec la création d'un makefile. Les noms par défault des fichiers seront main.c, fonctions.c et fonctions.h
 -csn : argument similaire au précédent, à la différence que le script demandera le nom des fichiers
