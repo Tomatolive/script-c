@@ -2,11 +2,11 @@
 clear
 
 ##########################################################################
-## Programme : script.sh                                     		    ##
+## Programme : script.sh                                                ##
 ## But       : Création des fichiers de programmation                   ##
 ##             Création de la documentation Doxygen                     ##
-##             Compilation de programme C (avec ou sans makefile)	    ##
-##             Exécution de programme (avec ou sans arguments)		    ##
+##             Compilation de programme C (avec ou sans makefile)       ##
+##             Exécution de programme (avec ou sans arguments)          ##
 ##             Création d'un readme pour le script                      ##
 ##             Affichage d'aide                                         ##
 ##                                                                      ##
@@ -127,7 +127,7 @@ then
     echo "Exemples d'utilisation :"
     echo "./script.sh -c -cs     : Création des trois fichiers main.c fonctions.c et fonctions.h, avec compilation grâce au makefile"
     echo "./script.sh -csn -d -e : Compilation séparée, demandant le nom des trois fichiers, génération de la documentation doxygen, puis exécution du programme"
-    echo "./script.sh -he	       : Création de README.txt"
+    echo "./script.sh -he        : Création de README.txt"
     exit 0
 fi
 
