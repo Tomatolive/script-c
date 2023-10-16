@@ -16,4 +16,4 @@ Appeler le script sans argument résultera dans de la compilation simple, avec m
 Exemples d'utilisation :  
 ./script.sh -c -cs     : Création des trois fichiers main.c fonctions.c et fonctions.h, avec compilation grâce au makefile  
 ./script.sh -csn -d -e : Compilation séparée, demandant le nom des trois fichiers, génération de la documentation doxygen, puis exécution du programme  
-./script.sh -he	       : Création de README.txt	
+./script.sh -he        : Création de README.txt	
