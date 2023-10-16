@@ -2,11 +2,11 @@
 clear
 
 ##########################################################################
-## Programme : script.sh                                     		    ##
+## Programme : script.sh                                                ##
 ## But       : Création des fichiers de programmation                   ##
 ##             Création de la documentation Doxygen                     ##
-##             Compilation de programme C (avec ou sans makefile)	    ##
-##             Exécution de programme (avec ou sans arguments)		    ##
+##             Compilation de programme C (avec ou sans makefile)       ##
+##             Exécution de programme (avec ou sans arguments)          ##
 ##             Création d'un readme pour le script                      ##
 ##             Affichage d'aide                                         ##
 ##                                                                      ##
@@ -28,6 +28,7 @@ clear
 ## Modification, ajout de d'arg° 10/10/2023  2.0      Thomas Brasdefer  ##
 ## Modification et ajout         11/10/2023  3.0      Thomas Brasdefer  ##
 ## Ajout et correction           12/10/2023  4.0      Thomas Brasdefer  ##
+## Correction                    13/10/2023  4.1      Thomas Brasdefer  ##
 ##########################################################################
 
 # --- Déclaration et initialisation (valeur par défaut) des variables associées aux arguments --- #
@@ -127,7 +128,7 @@ then
     echo "Exemples d'utilisation :"
     echo "./script.sh -c -cs     : Création des trois fichiers main.c fonctions.c et fonctions.h, avec compilation grâce au makefile"
     echo "./script.sh -csn -d -e : Compilation séparée, demandant le nom des trois fichiers, génération de la documentation doxygen, puis exécution du programme"
-    echo "./script.sh -he	       : Création de README.txt"
+    echo "./script.sh -he        : Création de README.txt"
     exit 0
 fi
 
@@ -274,7 +275,7 @@ then
         exit 1
     fi
     echo "***** Compilation du programme *****"
-    gcc -Wall $main.c -o $exe
+    gcc -Wall -g $main.c -o $exe
     echo "  OK"
 fi
 
@@ -282,7 +283,7 @@ fi
 if [ "$e" = true ]
 then
     echo "***** Execution du programme *****"
-    ./"$exe" "$strArg"
+    ./$exe $strArg
 fi
 exit 0
 
