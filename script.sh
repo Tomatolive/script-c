@@ -29,6 +29,7 @@ clear
 ## Modification et ajout         11/10/2023  3.0      Thomas Brasdefer  ##
 ## Ajout et correction           12/10/2023  4.0      Thomas Brasdefer  ##
 ## Correction                    13/10/2023  4.1      Thomas Brasdefer  ##
+## Modification                  24/10/2023  4.2      Thomas Brasdefer  ##
 ##########################################################################
 
 # --- Déclaration et initialisation (valeur par défaut) des variables associées aux arguments --- #
@@ -260,8 +261,7 @@ then
     fi
     echo "***** Création du makefile *****"
     touch Makefile.mk
-    echo -e "$exe: $fctc.o $main.o \n\t@echo '"Compilation de l executable"' \n\tgcc -o $exe $fctc.o $main.o \n$fctc.o: $fctc.c $fcth.h \n\t@echo '"Compilation de $fctc"' \n\tgcc -g -c $fctc.c -o $fctc.o \n$main.o: $main.c $fcth.h \n\t@echo '"Compilation du main"' \n\tgcc -g -c $main.c -o $main.o \nclean: \n\t@echo '"Les précédents fichiers ont bien été effacé"' \n\trm -f *.o" > Makefile.mk
-    echo "  OK"
+    echo -e "$exe: $fctc.o $main.o \n\t@echo '"Compilation de l executable"' \n\tgcc -o $exe $fctc.o $main.o -lm \n$fctc.o: $fctc.c $fcth.h \n\t@echo '"Compilation de $fctc"' \n\tgcc -g -c $fctc.c -o $fctc.o -lm \n$main.o: $main.c $fcth.h \n\t@echo '"Compilation du main"' \n\tgcc -g -c $main.c -o $main.o -lm \nclean: \n\t@echo '"Les précédents fichiers ont bien été effacé"' \n\trm -f *.o" > Makefile.mk    echo "  OK"
     echo "***** Execution du makefile *****"
     make -f Makefile.mk
     echo "  OK"
