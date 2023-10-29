@@ -30,7 +30,8 @@ clear
 ## Correction                    13/10/2023  4.1      Thomas Brasdefer  ##
 ## Modification                  24/10/2023  4.2      Thomas Brasdefer  ##
 ## Refonte majeure               27/10/2023  5.0      Thomas Brasdefer  ##
-## Modification du makefile      28/10/2023  5.1      Thomas Brasdefer  ##      
+## Modification du makefile      28/10/2023  5.1      Thomas Brasdefer  ##
+## Modification et correction    29/10/2023  5.2      Thomas Brasdefer  ##      
 ##########################################################################
 
 # --- Déclaration et initialisation (valeur par défaut) des variables associées aux arguments --- #
@@ -211,16 +212,19 @@ fi
 if [ "$d" = true ]
 then
     cd src/
-    echo "***** Création du fichier de configuration doxygen *****"
-    # --- Redirection de la sortie standard lors de la création du doxyfile --- #
-    doxygen -g proto1 > /dev/null
-    # --- Changement d'option dans le doxyfile afin de supprimer les affichages réalisés par Doxygen --- #
-    sed -e s/"QUIET                  = NO"/"QUIET                  = YES"/g proto1 > proto2
-    sed -e s/"WARNINGS               = YES"/"WARNINGS               = NO"/g proto2 > Doxyfile
-    # --- Changement d'option dans le doxyfile afin de générer la documentation dans le bon fichier --- #
-    sed -i s@"OUTPUT_DIRECTORY       ="@"OUTPUT_DIRECTORY       = ../doc/"@g Doxyfile 
-    rm proto1 proto2
-    echo "  OK"
+    if [ ! -f Doxyfile ]
+    then
+        echo "***** Création du fichier de configuration doxygen *****"
+        # --- Redirection de la sortie standard lors de la création du doxyfile --- #
+        doxygen -g proto1 > /dev/null
+        # --- Changement d'option dans le doxyfile afin de supprimer les affichages réalisés par Doxygen --- #
+        sed -e s/"QUIET                  = NO"/"QUIET                  = YES"/g proto1 > proto2
+        sed -e s/"WARNINGS               = YES"/"WARNINGS               = NO"/g proto2 > Doxyfile
+        # --- Changement d'option dans le doxyfile afin de générer la documentation dans le bon fichier --- #
+        sed -i s@"OUTPUT_DIRECTORY       ="@"OUTPUT_DIRECTORY       = ../doc/"@g Doxyfile 
+        rm proto1 proto2
+        echo "  OK"
+    fi
     echo "***** Génération de la documentation *****"
     # --- Redirection de la sortie erreur standard lors de la génération de la documentation --- #
     doxygen Doxyfile 2> /dev/null
@@ -236,7 +240,7 @@ then
     then
         echo "***** Création du makefile *****"
         touch Makefile
-        echo -e "# Fichier Makefile, crée par Thomas Brasdefer <brasdefert@gmail.com>\n# Pré-requis : Il est nécessaire que quatre répertoires (décrits ci-dessous) existent et que les fichiers sources (.c et .h) soient placés dans le répertoire des sources\n# Documentation des cibles : - all : permet la compilation du programme\n#							 - save : permet la copie des fichiers du répertoire des sources dans le répertoire de sauvegarde\n#							 - restore : permet la copie des fichiers du répertoire de sauvegarde dans le répertoire des sources\n#							 - comp : permet la création d'une archive contenant tous les fichiers sources\n#							 - clean : permet de supprimer les fichiers objets\n\n# Adresse du répertoire des fichiers sources\nsrcdir = ./src/\n# Adresse du répertoire des fichiers objets et de l'executable\nbindir = ./bin/\n# Adresse du répertoire de la documentation\ndocdir = ./doc/\n# Adresse du répertoire de sauvegarde des fichiers sources\nsavedir = ./save/\n# Nom de l'archive générée par comp\narchive = $archive\n# Noms des fichiers .c\nSRC = "'$'"(wildcard "'$'"(srcdir)*.c)\n# Noms des fichiers .o\nOBJ = "'$'"(subst "'$'"(srcdir),"'$'"(bindir),"'$'"(SRC:.c=.o))\n# Nom des fichiers .H\nHD = "'$'"(wildcard "'$'"(srcdir)*.h)\n# Adresse et nom de l'executable\nPROG = "'$'"(bindir)exe\nCC = gcc -Wall -g\n\nall : "'$'"(PROG)\n"'$'"(PROG) : "'$'"(OBJ)\n\t@echo 'Compilation de l executable' \n\t"'$'"(CC) "'$'"^ -o "'$'"@ -lm\n./bin/%.o : ./src/%.c\n\t@echo 'Compilation des fichiers objets'\n\t"'$'"(CC) -c "'$'"^ -o "'$'"@ -lm\n.PHONY : save restore clean\nsave :\n\t@echo 'Sauvegarde des fichiers sources'\n\tcp "'$'"(SRC) "'$'"(HD) "'$'"(savedir)\nrestore :\n\t@echo 'Restoration des fichiers sources'\n\tcp "'$'"(savedir)*.c "'$'"(savedir)*.h "'$'"(srcdir)\ncomp :\n\t@echo 'Création de l archive'\n\tmkdir "'$'"(archive)\n\tcp "'$'"(srcdir)* "'$'"(archive)/\n\ttar -cv "'$'"(archive)/ -f "'$'"(archive).tgz\n\trm -r "'$'"(archive)/\nclean :\n\t@echo 'Les précédents fichiers objets ont bien été effacé' \n\trm -f "'$'"(OBJ)" > Makefile   
+        echo -e "# Fichier Makefile, crée par Thomas Brasdefer <brasdefert@gmail.com>\n# Pré-requis : Il est nécessaire que quatre répertoires (décrits ci-dessous) existent et que les fichiers sources (.c et .h) soient placés dans le répertoire des sources\n# Documentation des cibles : - all : permet la compilation du programme\n#							 - save : permet la copie des fichiers du répertoire des sources dans le répertoire de sauvegarde\n#							 - restore : permet la copie des fichiers du répertoire de sauvegarde dans le répertoire des sources\n#							 - comp : permet la création d'une archive contenant tous les fichiers sources\n#							 - clean : permet de supprimer les fichiers objets\n\n# Adresse du répertoire des fichiers sources\nsrcdir = ./src/\n# Adresse du répertoire des fichiers objets et de l'executable\nbindir = ./bin/\n# Adresse du répertoire de la documentation\ndocdir = ./doc/\n# Adresse du répertoire de sauvegarde des fichiers sources\nsavedir = ./save/\n# Nom de l'archive générée par comp\narchive = $archive\n# Noms des fichiers .c\nSRC = "'$'"(wildcard "'$'"(srcdir)*.c)\n# Noms des fichiers .o\nOBJ = "'$'"(subst "'$'"(srcdir),"'$'"(bindir),"'$'"(SRC:.c=.o))\n# Nom des fichiers .H\nHD = "'$'"(wildcard "'$'"(srcdir)*.h)\n# Adresse et nom de l'executable\nPROG = "'$'"(bindir)exe\nCC = gcc -Wall -g\n\nall : "'$'"(PROG)\n"'$'"(PROG) : "'$'"(OBJ)\n\t@echo 'Compilation de l executable' \n\t"'$'"(CC) "'$'"^ -o "'$'"@\n./bin/%.o : ./src/%.c\n\t@echo 'Compilation des fichiers objets'\n\t"'$'"(CC) -c "'$'"^ -o "'$'"@\n.PHONY : save restore clean\nsave :\n\t@echo 'Sauvegarde des fichiers sources'\n\tcp "'$'"(SRC) "'$'"(HD) "'$'"(savedir)\nrestore :\n\t@echo 'Restoration des fichiers sources'\n\tcp "'$'"(savedir)*.c "'$'"(savedir)*.h "'$'"(srcdir)\ncomp :\n\t@echo 'Création de l archive'\n\tmkdir "'$'"(archive)\n\tcp "'$'"(srcdir)* "'$'"(archive)/\n\ttar -cv "'$'"(archive)/ -f "'$'"(archive).tgz\n\trm -r "'$'"(archive)/\nclean :\n\t@echo 'Les précédents fichiers objets ont bien été effacé' \n\trm -f "'$'"(OBJ)" > Makefile   
         echo "  OK"
     else
         echo "/!\ Un fichier makefile existe déjà"
