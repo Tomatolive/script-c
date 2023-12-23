@@ -27,10 +27,11 @@ Les options sont des paramètres directement modifiables par l'utilisateur dans 
 | `@fctc`       | Représente le nom du fichier de corps des fonctions | Quelconque     |
 | `@fcth`       | Représente le nom du fichier d'entetes des fonctions| Quelconque     |
 | `@executable` | Représente le nom de l'exécutable                   | Quelconque     |
-| `@archive`    | Représente le nom de l'archive créée par le makefile| Quelconque     | 
-| `@makefile`   | Représente la création du makefile SANS CMake       | `true`/`false` | 
-| `@d_gdb`      | Représente le débogage avec gdb                     | `true`/`false` | 
-| `@d_valgrind` | Représente le débogage avec valgrind                | `true`/`false` | 
+| `@archive`    | Représente le nom de l'archive créée par le makefile| Quelconque     |
+| `@editeur`    | Réprésente la commmande ouvrant un editeur de code  | Quelconque     |
+| `@makefile`   | Représente la création du makefile SANS CMake       | `true`/`false` |
+| `@d_gdb`      | Représente le débogage avec gdb                     | `true`/`false` |
+| `@d_valgrind` | Représente le débogage avec valgrind                | `true`/`false` |
 
 ## Arguments
 L'ordre des arguments n'a aucune importance, cependant les tirets sont obligatoires :  
