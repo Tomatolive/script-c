@@ -30,13 +30,12 @@ fcth=`grep ^@fcth $0 |  sed 's/@fcth=*//'`                   # Variable représe
 exe=`grep ^@executable $0 |  sed 's/@executable=*//'`        # Variable représentant le nom de l'exécutable
 archive=`grep ^@archive $0 |  sed 's/@archive=*//'`          # Variable représantant le nom de l'archive qui pourra être créée grâce au makefile sans CMake
 editeur=`grep ^@editeur $0 |  sed 's/@editeur=*//'`          # Variable contenant la commande permettant d'ouvrir les fichiers dans un editeur de code
+arg=`grep ^@argument $0 | sed 's/@argument=*//'`             # Variable déterminant l'utilisation d'argument lors de l'éxecution du programme
 makefile=`grep ^@makefile $0 |  sed 's/@makefile=*//'`       # Variable déterminant la création du makefile avec ou sans cmake
 d_gdb=`grep ^@d_gdb $0 |  sed 's/@d_gdb=*//'`                # Variable déterminant l'utilisation de gdb
 d_valgrind=`grep ^@d_valgrind $0 |  sed 's/@d_valgrind=*//'` # Variable déterminant l'utilisation de valgrind
-# --- Déclaration et initialisation (valeur par défaut) des variables permettant la récupération et l'utilisation d'argument pour l'exécution du programme C --- #
-strIn=""  # Variable contenant les différentes entrées d'arguments
-strArg="" # Variable contenant, à terme, l'entièreté des arguments
-nbArg=-1  # Variable contenant, à terme, le nombre d'arguments
+# --- Déclaration et initialisation (valeur par défaut) des variables permettant l'utilisation d'argument pour l'exécution du programme C --- #
+strArg="" # Variable contenant l'entièreté des arguments
 compt=0   # Variable vérifiant que l'on entre une seule fois dans la boucle demandant les arguments, dans le cas où -db et -e seraient utilisés simultanement
 # --- Déclaration et initialisation des variables de couleur ANSI --- #
 ROUGE="\e[31m"
@@ -76,17 +75,10 @@ do
 		fi
         if [ "$compt" -eq 0 ]
         then
-            echo "Veuillez indiquer le nombre d'argument (0 s'il n'y en a pas)"
-            read nbArg
-            if [ "$nbArg" -gt 0 ]
+            if [ "$arg" = true ]
             then
-                for (( j=1; j <= $nbArg; j++ ));
-                do
-                    echo "Entrez l'argument numéro $j :"
-                    read strIn
-                    # --- Concaténation des arguments en une seule chaine --- #
-                    strArg="$strArg $strIn"
-                done
+                echo "Entrez la ligne d'argument :"
+                read strArg
             fi
         fi
         let "compt++"
@@ -121,6 +113,7 @@ then
     echo "-> @fcth : représente le nom du fichier d'entetes des fonctions. Valeur : quelconque"
     echo "-> @executable : représente le nom de l'exécutable. Valeur : quelconque"
     echo "-> @archive : représente le nom de l'archive créée par le makefile SANS CMake. Valeur : quelconque"
+    echo "-> @argument : représente l'utilisation d'argument. Valeur : true|false"  
     echo "-> @editeur : représente la commmande ouvrant un editeur de code. Valeur : quelconque"
     echo "-> @makefile : représente la création du makefile SANS CMake. Valeur : true|false"
     echo "-> @d_gdb : représente le débogage avec gdb. Valeur : true|false"
@@ -130,7 +123,7 @@ then
     echo "-c : cet argument permet la création des fichiers de programmation, en utilisant les noms de fichiers des options @main, @fctc et @fcth"
     echo "-d : cet argument permet la création d'un fichier de config doxygen ainsi que la génération de la documentation"
 	echo "-db : cet argument permet le débogage du programme. Le script lancera valgrind et gdb pour déboguer le programme en fonction de la valeur des options @d_gdb et @d_valgrind"
-    echo "-e : cet argument permet la compilation puis l'exécution du programme (avec ou sans arguments). Attention, il faut déjà avoir généré un makefile pour pouvoir utiliser cet argument"
+    echo "-e : cet argument permet la compilation puis l'exécution du programme (avec ou sans arguments), ainsi qu'une vérification préalable des fuites mémoires. Attention, il faut déjà avoir généré un makefile pour pouvoir utiliser cet argument"
     echo "-h : cet argument affiche la présente documentation"
     echo "-he : cet argument exporte dans un fichier README la présente documentation"
     echo "-m : cet argument permet la création d'un makefile. En fonction de la valeur de @makefile, le makefile sera soit crée manuellement, soit avec Cmake"
@@ -147,7 +140,7 @@ fi
 if [ "$he" = true ]
 then
     echo "***** Création du README *****"
-    echo -e "Le script permet la génération des fichiers sources, la génération de la documentation doxygen, la création d'un makefile (avec ou sans CMake), la compilation, le débogage et l'exécution (avec ou sans arguments) du programme.\nLe script créera, s'ils n'existent pas, un répertoire pour les fichiers sources (src), un répertoire pour l'exécutable (bin), un répertoire pour la documentation doxygen (doc) et un dossier de sauvegarde des fichiers sources (save).\nIl est impératif que les fichiers sources (fichiers de programmation), s'ils existent avant le lancement du script, soit placés dans le même répertoire que le script.\nAprès la première utilisation du script, placez les fichiers sources soit dans le répertoire du script, soit dans le répertoire src.\nCes programmes sont nécessaires pour le bon fonctionnement du script : cmake, doxygen, gcc, gdb, make et valgrind.\n\nLe script est capable de générer deux Makefile différents : un Makefile manuel et un Makefile généré par CMake.\nIci, c'est le Makefile manuel qui nous intéresse. Voici un petit résumé des cibles du Makefile :\n-> all : permet la compilation du programme. Commande : make|make all\n-> save : permet la copie des fichiers du répertoire des sources src dans le répertoire de sauvegarde save. Commande : make save\n-> restore : permet la copie des fichiers du répertoire de sauvegarde save dans le répertoire des sources src. Commande : make restore\n-> comp : permet la création d'une archive contenant tous les fichiers sources. Commande : make comp\n-> clean : permet de supprimer les fichiers objets. Commande : make clean\n\nOptions :\nLes options sont des paramètres directement modifiables par l'utilisateur dans le code du script. Ils se trouvent à la fin du fichier et peuvent prendre différentes valeurs :\n-> @main : représente le nom du fichier principal. Valeur : quelconque\n-> @fctc : représente le nom du fichier de corps des fonctions. Valeur : quelconque\n-> @fcth : représente le nom du fichier d'entetes des fonctions. Valeur : quelconque\n-> @executable : représente le nom de l'exécutable. Valeur : quelconque\n-> @archive : représente le nom de l'archive créée par le makefile SANS CMake. Valeur : quelconque\n-> @editeur : représente la commmande ouvrant un editeur de code. Valeur : quelconque\n-> @makefile : représente la création du makefile SANS CMake. Valeur : true|false\n-> @d_gdb : représente le débogage avec gdb. Valeur : true|false\n-> @d_valgrind : représente le débogage avec valgrind. Valeur : true|false\n\nArguments (l'ordre des arguments n'a aucune importance, cependant les tirets sont obligatoires) :\n-c : cet argument permet la création des fichiers de programmation, en utilisant les noms de fichiers des options @main, @fctc et @fcth\n-d : cet argument permet la création d'un fichier de config doxygen ainsi que la génération de la documentation\n-db : cet argument permet le débogage du programme. Le script lancera valgrind et gdb pour déboguer le programme en fonction de la valeur des options @d_gdb et @d_valgrind\n-e : cet argument permet la compilation puis l'exécution du programme (avec ou sans arguments). Attention, il faut déjà avoir généré un makefile pour pouvoir utiliser cet argument\n-h : cet argument affiche la présente documentation\n-he : cet argument exporte dans un fichier README la présente documentation\n-m : cet argument permet la création d'un makefile. En fonction de la valeur de @makefile, le makefile sera soit crée manuellement, soit avec Cmake\nAppeler le script sans argument résultera dans 1) la création des différents répertoires (s'ils n'existent pas) 2) l'importation des fichiers sources du répertoire courant dans le répertoire src. NB : le script exécutera ces actions même s'il est appelé avec des arguments.\n\nExemples d'utilisation :\n./script.sh -c         : Création des trois fichiers main.c fonctions.c et fonctions.h\n./script.sh -m -d -e   : Création du makefile, génération de la documentation doxygen, compilation puis exécution du programme\n./script.sh -he        : Création de README.txt	" > README.txt
+    echo -e "Le script permet la génération des fichiers sources, la génération de la documentation doxygen, la création d'un makefile (avec ou sans CMake), la compilation, le débogage et l'exécution (avec ou sans arguments) du programme.\nLe script créera, s'ils n'existent pas, un répertoire pour les fichiers sources (src), un répertoire pour l'exécutable (bin), un répertoire pour la documentation doxygen (doc) et un dossier de sauvegarde des fichiers sources (save).\nIl est impératif que les fichiers sources (fichiers de programmation), s'ils existent avant le lancement du script, soit placés dans le même répertoire que le script.\nAprès la première utilisation du script, placez les fichiers sources soit dans le répertoire du script, soit dans le répertoire src.\nCes programmes sont nécessaires pour le bon fonctionnement du script : cmake, doxygen, gcc, gdb, make et valgrind.\n\nLe script est capable de générer deux Makefile différents : un Makefile manuel et un Makefile généré par CMake.\nIci, c'est le Makefile manuel qui nous intéresse. Voici un petit résumé des cibles du Makefile :\n-> all : permet la compilation du programme. Commande : make|make all\n-> save : permet la copie des fichiers du répertoire des sources src dans le répertoire de sauvegarde save. Commande : make save\n-> restore : permet la copie des fichiers du répertoire de sauvegarde save dans le répertoire des sources src. Commande : make restore\n-> comp : permet la création d'une archive contenant tous les fichiers sources. Commande : make comp\n-> clean : permet de supprimer les fichiers objets. Commande : make clean\n\nOptions :\nLes options sont des paramètres directement modifiables par l'utilisateur dans le code du script. Ils se trouvent à la fin du fichier et peuvent prendre différentes valeurs :\n-> @main : représente le nom du fichier principal. Valeur : quelconque\n-> @fctc : représente le nom du fichier de corps des fonctions. Valeur : quelconque\n-> @fcth : représente le nom du fichier d'entetes des fonctions. Valeur : quelconque\n-> @executable : représente le nom de l'exécutable. Valeur : quelconque\n-> @archive : représente le nom de l'archive créée par le makefile SANS CMake. Valeur : quelconque\n-> @editeur : représente la commmande ouvrant un editeur de code. Valeur : quelconque\n-> @argument : représente l'utilisation d'argument. Valeur : true|false\n-> @makefile : représente la création du makefile SANS CMake. Valeur : true|false\n-> @d_gdb : représente le débogage avec gdb. Valeur : true|false\n-> @d_valgrind : représente le débogage avec valgrind. Valeur : true|false\n\nArguments (l'ordre des arguments n'a aucune importance, cependant les tirets sont obligatoires) :\n-c : cet argument permet la création des fichiers de programmation, en utilisant les noms de fichiers des options @main, @fctc et @fcth\n-d : cet argument permet la création d'un fichier de config doxygen ainsi que la génération de la documentation\n-db : cet argument permet le débogage du programme. Le script lancera valgrind et gdb pour déboguer le programme en fonction de la valeur des options @d_gdb et @d_valgrind\n-e : cet argument permet la compilation puis l'exécution du programme (avec ou sans arguments), ainsi qu'une vérification préalable des fuites mémoires. Attention, il faut déjà avoir généré un makefile pour pouvoir utiliser cet argument\n-h : cet argument affiche la présente documentation\n-he : cet argument exporte dans un fichier README la présente documentation\n-m : cet argument permet la création d'un makefile. En fonction de la valeur de @makefile, le makefile sera soit crée manuellement, soit avec Cmake\nAppeler le script sans argument résultera dans 1) la création des différents répertoires (s'ils n'existent pas) 2) l'importation des fichiers sources du répertoire courant dans le répertoire src. NB : le script exécutera ces actions même s'il est appelé avec des arguments.\n\nExemples d'utilisation :\n./script.sh -c         : Création des trois fichiers main.c fonctions.c et fonctions.h\n./script.sh -m -d -e   : Création du makefile, génération de la documentation doxygen, compilation puis exécution du programme\n./script.sh -he        : Création de README.txt	" > README.txt
     echo -e "$VERT  OK$DEFAUT"
     exit 0
 fi
@@ -301,7 +294,7 @@ then
 	# -- Exécution --- #
 	elif [ "$e" = true ]
 	then
-        echo "***** Vérification de problèmes mémoire *****"
+        echo "***** Exécution du programme *****"
         valgrindCommande="valgrind --leak-check=full --log-file=$valgrindSrt ./bin/$exe $strArg"
         # --- Exécution (double évaluation) du programme avec valgrind --- #
         eval $valgrindCommande
@@ -320,8 +313,6 @@ then
         echo -e "$VERT  Ok$DEFAUT"
         # --- Suppression du fichier de sortie de valgrind --- #
         rm -f "$valgrindSrt"
-    	echo "***** Exécution du programme *****"
-    	./bin/$exe $strArg
 	fi
 fi
 exit 0
@@ -333,6 +324,7 @@ exit 0
 @executable=exe
 @archive=Programme
 @editeur=code
+@argument=false
 @makefile=true
 @d_gdb=true
 @d_valgrind=true
